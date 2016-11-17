@@ -1,0 +1,60 @@
+# Locate the glfw3 library
+#
+# This module defines the following variables:
+#
+# GLFW3_LIBRARY      the name of the library;
+# GLFW3_INCLUDE_DIR  where to find glfw include files.
+# GLFW3_FOUND        true if both the GLFW3_LIBRARY and GLFW3_INCLUDE_DIR have been found.
+#
+# To help locate the library and include file, you can define a
+# variable called GLFW3_ROOT which points to the root of the glfw library
+# installation.
+#
+
+# Check environment for root search directory
+set( _glfw3_ENV_ROOT $ENV{GLFW3_ROOT} )
+if( NOT GLFW3_ROOT AND _glfw3_ENV_ROOT )
+    set(GLFW3_ROOT ${_glfw3_ENV_ROOT} )
+endif()
+
+# default search dirs
+set( _glfw3_HEADER_SEARCH_DIRS
+        "/usr/include"
+        "/usr/local/include"
+        "C:/Program Files (x86)/glfw/include"
+        "${GLFW3_ROOT}/include" )
+set( _glfw3_LIB_SEARCH_DIRS
+        "/usr/lib"
+        "/usr/local/lib"
+        "C:/Program Files (x86)/glfw/lib-msvc110"
+        "${GLFW3_ROOT}/lib-msvc110" )
+
+set(GLFW3_LOADED_AS_SUBDIRECTORY FALSE)
+
+# Put user specified location at beginning of search
+if(EXISTS "${GLFW3_ROOT}")
+    message(STATUS "Checking for directory ${GLFW3_ROOT}/src")
+    # Check if the source code is hanging out
+    if(EXISTS "${GLFW3_ROOT}/src")
+        add_subdirectory("${GLFW3_ROOT}" "${CMAKE_CURRENT_BINARY_DIR}/glfw")
+        set(GLFW3_LOADED_AS_SUBDIRECTORY TRUE)
+        message(STATUS "Loading GLFW3 as source code")
+    else()
+        list( INSERT _glfw3_HEADER_SEARCH_DIRS 0 "${GLFW3_ROOT}/include" )
+        list( INSERT _glfw3_LIB_SEARCH_DIRS 0 "${GLFW3_ROOT}/lib" )
+    endif()
+endif()
+
+if(NOT GLFW3_LOADED_AS_SUBDIRECTORY)
+    # Search for the header
+    FIND_PATH(GLFW3_INCLUDE_DIR "GLFW/glfw3.h"
+            PATHS ${_glfw3_HEADER_SEARCH_DIRS} )
+
+    # Search for the library
+    FIND_LIBRARY(GLFW3_LIBRARY NAMES glfw3 glfw
+            PATHS ${_glfw3_LIB_SEARCH_DIRS} )
+
+    INCLUDE(FindPackageHandleStandardArgs)
+    FIND_PACKAGE_HANDLE_STANDARD_ARGS(GLFW3 DEFAULT_MSG
+            GLFW3_LIBRARY GLFW3_INCLUDE_DIR)
+endif()
