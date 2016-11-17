@@ -1,0 +1,9 @@
+TODO
+================================================================================
+
+- Add time arithmetics
+- Fix HC-SR04 with the new timer functions
+- Add support for infrared communications
+- Add support for accelerometer and gyroscope MPU-6050
+
+(At this point, a quadcopter could be controlled with a proper PID implementation)

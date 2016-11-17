@@ -1,0 +1,20 @@
+
+
+before_install: scripts/setup_travis.sh
+
+install:
+    - sudo apt-get install -qq binutils-avr avr-libc
+    - sudo apt-get install simulavr
+
+    
+before_script:
+    - cmake --version
+    - avr-gcc --version
+    - mkdir build
+    - cd build
+    - cmake ..
+    
+script: make
+
+
+
