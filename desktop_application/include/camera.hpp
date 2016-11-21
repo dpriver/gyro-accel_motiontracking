@@ -30,19 +30,20 @@
 #include <glm/gtc/matrix_transform.hpp>
 using namespace glm;
  
-class camera {
+class Camera {
     
     private:
     mat4 projectionMatrix;
     mat4 viewMatrix;
     
     public:
-    camera();
+    Camera();
+    ~Camera();
     
-    mat4 calculate_MVP(mat4 model);
+    mat4 calculateMVP(mat4 model);
      
-    void rotate_camera();
-    void translate_camera();
-}
+    void rotateCamera();
+    void translateCamera();
+};
 
 #endif /* __CAMERA_HPP */

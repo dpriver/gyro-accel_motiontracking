@@ -179,7 +179,7 @@ int8_t update_bias(int32_t gyroX_mean, int32_t gyroY_mean, int32_t gyroZ_mean,
     gyroZ_mean = gyro_bias.z - (gyroZ_mean/4);
 
     // remove gravity from bias calculation
-    accelX_mean = accel_bias.x - ((accelX_mean-16384)/8);
+    accelX_mean = accel_bias.x - ((accelX_mean-8192)/8);
     accelY_mean = accel_bias.y - (accelY_mean/8);
     accelZ_mean = accel_bias.z - (accelZ_mean/8);
 
@@ -223,7 +223,7 @@ int main( void ) {
     usart_print("\n############################################################\n");
     
     delay_ms(3000);
-    if ((twi_error = mpu60x0_init(MPU60X0_GYRO_SCALE_250dps, MPU60X0_ACCEL_SCALE_2G, MPU60X0_DLPF_5Hz, 7)) != 0) {
+    if ((twi_error = mpu60x0_init(MPU60X0_GYRO_SCALE_250dps, MPU60X0_ACCEL_SCALE_4G, MPU60X0_DLPF_5Hz, 7)) != 0) {
         usart_print("\n MPU6050 is not working... CODE: ");
         usart_printnumber8(twi_error);
         return 0;
@@ -236,7 +236,7 @@ int main( void ) {
     mpu60x0_flush();
     gather_data(&gyroX_mean, &gyroY_mean, &gyroZ_mean, &accelX_mean, &accelY_mean, &accelZ_mean);
     
-    while((ABS(accelX_mean) > (16384+10)) || (ABS(accelY_mean) > 10) || (ABS(accelZ_mean) > 10) ||
+    while((ABS(accelX_mean) > (8192+10)) || (ABS(accelY_mean) > 10) || (ABS(accelZ_mean) > 10) ||
           (ABS(gyroX_mean) > 10) || (ABS(gyroY_mean) > 10) || (ABS(gyroZ_mean) > 10)) {
     
         usart_print("\n ==========================================================================");

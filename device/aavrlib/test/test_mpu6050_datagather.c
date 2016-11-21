@@ -32,24 +32,24 @@
 #include <systick.h>
 #include <time.h>
 
-#define GYROX_OFFSET (12)
-#define GYROY_OFFSET (-21)
-#define GYROZ_OFFSET (34)
+#define GYROX_OFFSET (-7)
+#define GYROY_OFFSET (-24)
+#define GYROZ_OFFSET (38)
 
-#define ACCELX_OFFSET (-993)
-#define ACCELY_OFFSET (-222)
-#define ACCELZ_OFFSET (1360)
+#define ACCELX_OFFSET (-1931)
+#define ACCELY_OFFSET (-220)
+#define ACCELZ_OFFSET (1362)
 
 #ifndef GYRO_SENS_SCALE
-    #define GYRO_SENS_SCALE MPU60X0_GYRO_SCALE_500dps
+    #define GYRO_SENS_SCALE MPU60X0_GYRO_SCALE_250dps
 #endif
 
 #ifndef ACCEL_SENS_SCALE
-    #define ACCEL_SENS_SCALE MPU60X0_ACCEL_SCALE_4G
+    #define ACCEL_SENS_SCALE MPU60X0_ACCEL_SCALE_8G
 #endif
 
 #ifndef DLPF_MODE
-    #define DLPF_MODE MPU60X0_DLPF_OFF
+    #define DLPF_MODE MPU60X0_DLPF_5Hz
 #endif
 
 #ifndef SMP_DIV
@@ -71,15 +71,15 @@ int main( void ) {
     usart_init();
     
     delay_ms(100);
-    usart_print("# MPU6050 TEST\n#\n");
-    usart_print("# Gyro Sensitivity: ");
-    usart_printnumber8(GYRO_SENS_SCALE);
-    usart_print("\n# Accel Sensitivity: ");
-    usart_printnumber8(ACCEL_SENS_SCALE);
-    usart_print("\n# DLPF: ");
-    usart_printnumber8(DLPF_MODE);
-    usart_print("\n# Sample Rate Divider: ");
-    usart_printnumber8(SMP_DIV);
+    //usart_print("# MPU6050 TEST\n#\n");
+    //usart_print("# Gyro Sensitivity: ");
+    //usart_printnumber8(GYRO_SENS_SCALE);
+    //usart_print("\n# Accel Sensitivity: ");
+    //usart_printnumber8(ACCEL_SENS_SCALE);
+    //usart_print("\n# DLPF: ");
+    //usart_printnumber8(DLPF_MODE);
+    //usart_print("\n# Sample Rate Divider: ");
+    //usart_printnumber8(SMP_DIV);
     
     mpu60x0_error = mpu60x0_init(GYRO_SENS_SCALE, ACCEL_SENS_SCALE, DLPF_MODE, SMP_DIV);
     if (mpu60x0_error != MPU60X0_SUCCESS) {
@@ -88,7 +88,7 @@ int main( void ) {
         return 0;
     }
     else {
-        usart_print("\n Initialized mpu6050\n");
+        //usart_print("\n Initialized mpu6050\n");
     }    
 
     
@@ -102,30 +102,31 @@ int main( void ) {
     // reset fifo
     mpu60x0_flush();
         
-    usart_print("\n# TIME      GYROx       GYROy       GYROx       ACCELx");
-    usart_print("      ACCELy      ACCELz\n");
+    //usart_print("\n# TIME      GYROx       GYROy       GYROx       ACCELx");
+    //usart_print("      ACCELy      ACCELz\n");
     
     
     // gather data for 20 seconds
     get_uptime(&time);
     end_time = time.ms + 20000;
-    while(time.ms < end_time) {
+    //while(time.ms < end_time) {
+    while(1) {
         uint16_t i = 0;
         
         read_values = mpu60x0_read_fifo(mpu_data, 100);
         
         if (read_values < 0 ) {
-            usart_print("Error ");
-            usart_printsignumber32(read_values);
-            usart_print("\n");
+            //usart_print("Error ");
+            //usart_printsignumber32(read_values);
+            //usart_print("\n");
             continue;     
         }
         
         for (i = 0 ; i < read_values ; i++) {
             usart_print("\n");
-            usart_printnumber32(time.ms);
+            //usart_printnumber32(time.ms);
             
-            usart_print(" ");
+            //usart_print(" ");
             usart_printsignumber32(mpu_data[i].gyro.x);
             usart_print(" ");
             usart_printsignumber32(mpu_data[i].gyro.y);

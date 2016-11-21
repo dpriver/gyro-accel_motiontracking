@@ -25,35 +25,42 @@
 #define __MODEL_CUBE_HPP
  
  
+#include <GL/glew.h>
+
+#include <GLFW/glfw3.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-using namespace glm;
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/norm.hpp>
+#include <glm/gtx/transform.hpp>
  
-#define SHADER_DIR "../resources/shaders/"
- 
-class model {
+class Model {
     
     private:
-    mat4 modelMatrix;
+    glm::mat4 modelMatrix;
+    GLfloat modelVertexBufferData[36*3];
+    GLfloat modelColorBufferData[36*3];
     GLuint vertexBuffer;
     GLuint colorBuffer;
     int n_vertex;
-    
-    GLuint VertexArrayID;
-    GLuint shaderID;
+    int buffersCreated;
     
     
     public:
-    model();
+    Model();
+    ~Model();
      
-    glm::mat4 get_model_matrix();
-    GLuint get_vertex_buffer();
-    GLuint get_color_buffer();
-    int get_n_vertex();
+    glm::mat4 getModelMatrix();
+    GLuint getVertexBuffer();
+    GLuint getColorBuffer();
+    int getNumVertex();
      
-    void rotate_model();
-    void translate_model();
-}
+    void createBuffers();
+    void transformModel(glm::vec3 rotation, glm::vec3 translation);
+};
 
 #endif /* __MODEL_CUBE_HPP */
 

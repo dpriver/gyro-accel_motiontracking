@@ -30,24 +30,25 @@
 using namespace glm;
 
  
-camera::camera() {
+Camera::Camera() {
+    projectionMatrix = glm::perspective(45.0f, 4.0f/3.0f, 0.1f, 100.0f);
+    viewMatrix = glm::lookAt(glm::vec3(0,0,5), glm::vec3(0,0,0), glm::vec3(0,1,0));
+}
+
+Camera::~Camera() {
     
 }
 
-camera::~camera() {
-    
-}
-
-mat4 camera::calculate_MVP(mat4 modelMatrix) {
+mat4 Camera::calculateMVP(mat4 modelMatrix) {
     
     return projectionMatrix * viewMatrix * modelMatrix;
 }
  
-void camera::rotate_camera() {
-    
+void Camera::rotateCamera() {
+    viewMatrix = viewMatrix;
 }
 
-void camera::translate_camera() {
-    
+void Camera::translateCamera() {
+    viewMatrix = viewMatrix;
 }
 

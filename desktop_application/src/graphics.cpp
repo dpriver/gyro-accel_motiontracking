@@ -21,30 +21,24 @@
  *
  ******************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <GL/glew.h>
-
-#include <GLFW/glfw3.h>
-GLFWwindow* window;
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-using namespace glm;
-
-#include "shader.hpp"
-#include "controls.hpp"
-
-// Model to represent the virtual device
-model main_model;
+#include "graphics.hpp"
 
 
-void register_model(model new_model) {
-    main_model = new_model;
+GraphicManager::GraphicManager() : init(0) {
+    
 }
 
-int graphic_init() {
+
+GraphicManager::~GraphicManager() {
+    if (init == 1) {
+        glDeleteVertexArrays(1, &vertex_array_ID);
+        glDeleteProgram(programID);
+        glfwTerminate();
+    }
+}
+
+
+int GraphicManager::initGraphics() {
     
     if (!glfwInit()) {
         fprintf( stderr, "Failed to initialize GLFW\n");
@@ -87,12 +81,62 @@ int graphic_init() {
     // Accept fragment if it is closer to the camera than the former one
     glDepthFunc(GL_LESS);
         
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+        
+        
+    glGenVertexArrays(1, &vertex_array_ID);
+
+    // Load vertex and fragment shaders
+    programID = LoadShaders( SHADER_DIR "SimpleVertexShader.vertexshader", SHADER_DIR "SimpleFragmentShader.fragmentshader" );
+    
+    // Get location of shader uniform "MVP"
+    model_mvp_uniform = glGetUniformLocation(programID, "MVP");
+    
+    
+    glBindVertexArray(vertex_array_ID);
+    model.createBuffers();
+    
+    glBindVertexArray(0);
+    
+    init = 1;
+        
     return 0;
 }
 
 
-void graphic_draw() {
+void GraphicManager::drawGraphics() {
+    
+    glm::mat4 model_MVP;
+    
+    // Bind VAO
+    glBindVertexArray(vertex_array_ID);
     
     
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    glUseProgram(programID);
     
+    // Calculate the model MVP    
+    model_MVP = camera.calculateMVP(model.getModelMatrix());
+    
+    // Pass the model MVP to the shaders
+    glUniformMatrix4fv(model_mvp_uniform, 1, GL_FALSE, &model_MVP[0][0]);
+    
+    glDrawArrays(GL_TRIANGLES, 0, model.getNumVertex());
+    
+    
+    glfwSwapBuffers(window);
+    glBindVertexArray(0);
+}
+
+
+void GraphicManager::transformModel(vec3 rotation, vec3 translation) {
+    model.transformModel(rotation, translation);
+}
+
+
+bool GraphicManager::exit() {
+    glfwPollEvents();
+    
+    return (glfwGetKey(window, GLFW_KEY_ESCAPE ) == GLFW_PRESS) ||
+        (glfwWindowShouldClose(window) != 0);
 }

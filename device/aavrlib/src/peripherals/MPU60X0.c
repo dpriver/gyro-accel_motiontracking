@@ -227,6 +227,7 @@ int16_t mpu60x0_read_fifo(mpu60x0_sens_t *data, uint16_t length) {
         return mpu60x0_error;
     }
 
+
     while (i < length) {
      
         data[i].gyro.x = (data[i].gyro.x << 8) | ((uint16_t)data[i].gyro.x >> 8);
@@ -239,7 +240,7 @@ int16_t mpu60x0_read_fifo(mpu60x0_sens_t *data, uint16_t length) {
         
         i++;
     }
-    
+
     return length;
 }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- *	graphics.cpp
+ *	graphics.hpp
  *
  *  graphic related functionality
  *
@@ -20,5 +20,48 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ******************************************************************************/
- 
 
+#ifndef __GRAPHICS_HPP
+#define __GRAPHICS_HPP
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <GL/glew.h>
+
+#include <GLFW/glfw3.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include "shader.hpp"
+
+#include "model.hpp"
+#include "camera.hpp"
+
+#define SHADER_DIR "../resources/shaders/"
+
+class GraphicManager {
+    
+    private:
+    int init;
+    GLFWwindow* window;
+    GLuint vertex_array_ID;
+    GLuint programID;
+    GLuint model_mvp_uniform;
+
+    // Model to represent the virtual device
+    Model model;
+    Camera camera;
+    
+    public:
+    GraphicManager();
+    ~GraphicManager();
+    
+    int initGraphics();
+    void drawGraphics();
+    void transformModel(vec3 rotation, vec3 translation);
+    bool exit();
+};
+
+#endif /* __GRAPHICS_HPP */

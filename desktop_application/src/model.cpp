@@ -24,17 +24,8 @@
 #include "model.hpp"
 
  
-model::model() {
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
-
-	// Create and compile our GLSL program from the shaders
-	GLuint shaderID = LoadShaders( SHADER_DIR "SimpleVertexShader.vertexshader", SHADER_DIR "SimpleFragmentShader.fragmentshader" );
-
-
-    // Our vertices. Three consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
-    // A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
-    static const GLfloat g_cube_vertex_buffer_data[] = {
+Model::Model() 
+    : modelVertexBufferData{
         -0.2f,-0.2f,-0.2f, // triangle 1 : begin
         -0.2f,-0.2f, 0.2f,
         -0.2f, 0.2f, 0.2f, // triangle 1 : end
@@ -71,82 +62,120 @@ model::model() {
          0.2f, 0.2f, 0.2f,
         -0.2f, 0.2f, 0.2f,
          0.2f,-0.2f, 0.2f
-    };
+    },
+    modelColorBufferData{
+         1.0f, 0.0f, 0.0f, // triangle 1 : begin
+         1.0f, 0.0f, 0.0f,
+         1.0f, 0.0f, 0.0f, // triangle 1 : end
+         0.0f, 1.0f, 0.0f, // triangle 2 : begin
+         0.0f, 1.0f, 0.0f,
+         0.0f, 1.0f, 0.0f, // triangle 2 : end
+         0.5f, 0.5f, 0.0f, // TOP 1
+         0.5f, 0.5f, 0.0f,
+         0.5f, 0.5f, 0.0f,
+         0.0f, 1.0f, 0.0f,
+         0.0f, 1.0f, 0.0f,
+         0.0f, 1.0f, 0.0f,
+         1.0f, 0.0f, 0.0f,
+         1.0f, 0.0f, 0.0f,
+         1.0f, 0.0f, 0.0f,
+         0.5f, 0.5f, 0.0f, // TOP 1
+         0.5f, 0.5f, 0.0f,
+         0.5f, 0.5f, 0.0f,
+         0.0f, 0.5f, 0.5f,
+         0.0f, 0.5f, 0.5f,
+         0.0f, 0.5f, 0.5f,
+         0.0f, 0.0f, 1.0f,
+         0.0f, 0.0f, 1.0f,
+         0.0f, 0.0f, 1.0f,
+         0.0f, 0.0f, 1.0f,
+         0.0f, 0.0f, 1.0f,
+         0.0f, 0.0f, 1.0f,
+         0.5f, 0.0f, 0.5f, // TOP 2
+         0.5f, 0.0f, 0.5f,
+         0.5f, 0.0f, 0.5f,
+         0.5f, 0.0f, 0.5f, // TOP 2
+         0.5f, 0.0f, 0.5f,
+         0.5f, 0.0f, 0.5f,
+         0.0f, 0.5f, 0.5f,
+         0.0f, 0.5f, 0.5f,
+         0.0f, 0.5f, 0.5f       
+    },
+    vertexBuffer(0), colorBuffer(0), buffersCreated(0) {
 
-    // One color for each vertex. They were generated randomly.
-    static const GLfloat g_cube_color_buffer_data[] = {
-        1.0f,  0.0f,  0.0f,
-        1.0f,  0.0f,  0.0f,
-        1.0f,  0.0f,  0.0f,
-        1.0f,  0.0f,  0.0f,
-        1.0f,  0.0f,  0.0f,
-        1.0f,  0.0f,  0.0f,
-        0.0f,  1.0f,  0.0f,
-        0.0f,  1.0f,  0.0f,
-        0.0f,  1.0f,  0.0f,
-        0.0f,  1.0f,  0.0f,
-        0.0f,  1.0f,  0.0f,
-        0.0f,  1.0f,  0.0f,
-        0.0f,  0.0f,  1.0f,
-        0.0f,  0.0f,  1.0f,
-        0.0f,  0.0f,  1.0f,
-        0.0f,  0.0f,  1.0f,
-        0.0f,  0.0f,  1.0f,
-        0.0f,  0.0f,  1.0f,
-        0.997f,  0.513f,  0.064f,
-        0.945f,  0.719f,  0.592f,
-        0.543f,  0.021f,  0.978f,
-        0.279f,  0.317f,  0.505f,
-        0.167f,  0.620f,  0.077f,
-        0.347f,  0.857f,  0.137f,
-        0.055f,  0.953f,  0.042f,
-        0.714f,  0.505f,  0.345f,
-        0.783f,  0.290f,  0.734f,
-        0.722f,  0.645f,  0.174f,
-        0.302f,  0.455f,  0.848f,
-        0.225f,  0.587f,  0.040f,
-        0.517f,  0.713f,  0.338f,
-        0.053f,  0.959f,  0.120f,
-        0.393f,  0.621f,  0.362f,
-        0.673f,  0.211f,  0.457f,
-        0.820f,  0.883f,  0.371f,
-        0.982f,  0.099f,  0.879f
-    };
+    vertexBuffer = 0;
+    colorBuffer = 0;
+    n_vertex = 3*12;
+}
+
+Model::~Model() {
+    
+    if (buffersCreated == 1) {
+        glDeleteBuffers(1, &vertexBuffer);
+        glDeleteBuffers(1, &colorBuffer);     
+    }
+}
 
 
+glm::mat4 Model::getModelMatrix() {
+    return modelMatrix;
+}
+
+
+GLuint Model::getVertexBuffer() {
+    return vertexBuffer;
+}
+
+
+GLuint Model::getColorBuffer() {
+    return colorBuffer;
+}
+
+
+int Model::getNumVertex() {
+    return n_vertex;
+}
+
+
+void Model::createBuffers() {
+    
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_cube_vertex_buffer_data), g_cube_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(modelVertexBufferData), modelVertexBufferData, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(
+        0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+        3,                  // size
+        GL_FLOAT,           // type
+        GL_FALSE,           // normalized?
+        0,                  // stride
+        (void*)0            // array buffer offset
+    );
 
     GLuint colorbuffer;
     glGenBuffers(1, &colorbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_cube_color_buffer_data), g_cube_color_buffer_data, GL_STATIC_DRAW); 
-}
-
-glm::mat4 model::get_model_matrix() {
-    return modelMatrix;
-}
-
-GLuint model::get_vertex_buffer() {
-    return vertexBuffer;
-}
-
-GLuint model::get_color_buffer() {
-    return colorBuffer;
-}
-
-int model::get_n_vertex() {
-    return n_vertex;
-}
-
-void model::rotate_model() {
+    glBufferData(GL_ARRAY_BUFFER, sizeof(modelColorBufferData), modelColorBufferData, GL_STATIC_DRAW);
     
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(
+        1,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        0,
+        (void*)0
+    );
+    buffersCreated = 1;
     
 }
 
-void model::translate_model() {
+void Model::transformModel(glm::vec3 rotation, glm::vec3 translation) {
     
+    glm::mat4 rotationMatrix = glm::eulerAngleYXZ(rotation.y, rotation.x, rotation.z);
+    glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), translation);
     
+    modelMatrix = translationMatrix * rotationMatrix * modelMatrix;
 }

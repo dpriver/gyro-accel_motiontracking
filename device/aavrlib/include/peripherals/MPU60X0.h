@@ -26,7 +26,7 @@
 #ifndef __MPU_60X0
 #define __MPU_60X0
 
-
+#define MPU60X0_ENGINEERING_SAMPLE_VERSION
 #define MPU60X0_I2C_ADDR    (0x68)
 
 
@@ -75,13 +75,21 @@
 #define MPU60X0_REG_TEMP_DATA       (65)
 #define MPU60X0_REG_EXTERN_DATA     (73)
 
-
-typedef enum {
-    MPU60X0_ACCEL_SCALE_2G  = 0,
-    MPU60X0_ACCEL_SCALE_4G  = (0x1 << 3),
-    MPU60X0_ACCEL_SCALE_8G  = (0x2 << 3),
-    MPU60X0_ACCEL_SCALE_16G = (0x3 << 3)
-} mpu60x0_accel_scale_t;
+#ifdef MPU60X0_ENGINEERING_SAMPLE_VERSION
+    typedef enum {
+        MPU60X0_ACCEL_SCALE_4G  = 0,
+        MPU60X0_ACCEL_SCALE_8G  = (0x1 << 3),
+        MPU60X0_ACCEL_SCALE_16G = (0x2 << 3),
+        MPU60X0_ACCEL_SCALE_32G = (0x3 << 3)
+    } mpu60x0_accel_scale_t;
+#else
+    typedef enum {
+        MPU60X0_ACCEL_SCALE_2G  = 0,
+        MPU60X0_ACCEL_SCALE_4G  = (0x1 << 3),
+        MPU60X0_ACCEL_SCALE_8G  = (0x2 << 3),
+        MPU60X0_ACCEL_SCALE_16G = (0x3 << 3)
+    } mpu60x0_accel_scale_t;
+#endif
 
 typedef enum {
     MPU60X0_GYRO_SCALE_250dps  = 0,
